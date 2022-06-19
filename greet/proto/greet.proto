@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package greet;
+
+option go_package = "github.com/johess40/AlphagRpc/greet/proto";
+
+message GreetRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string occupation = 3;
+  string location = 4;
+}
+
+message GreetResponse {
+  string result_first_name = 1;
+  string result_last_name = 2;
+  string result_occupation = 3;
+  string result_location = 4;
+}
+
+message SumRequest {
+  uint32 sum = 1;
+}
+
+
+message TerraRequest {
+    string provider = 1;
+    string resource_name = 2;
+    string number_needed = 3;
+    string prefix = 4;
+    map<string, string> tags = 5;
+}
+
+message TerraResponse {
+    string provider = 1;
+    string resource_name = 2;
+    string number_to_be_requested = 3;
+    string planned_namespace = 4;
+    map<string, string> tags_to_be_applied = 5;
+}
+
+message SumResponse {
+  uint32 result = 1;
+}
+
+service GreetService {
+rpc Greet (GreetRequest) returns(GreetResponse);
+}
+
+service SumService {
+rpc Sum (SumRequest) returns(SumResponse);
+}
+
+service TerraformService {
+  rpc Terra (TerraRequest) returns(TerraResponse);
+}
+
