@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package terra;
+
+option go_package = "github.com/johess40/AlphagRpc/terraform/proto";
+
+message TerraRequest {
+    string provider = 1;
+    string resource_name = 2;
+    string number_needed = 3;
+    string prefix = 4;
+    map<string, string> tags = 5;
+}
+
+message TerraResponse {
+    string provider = 1;
+    string resource_name = 2;
+    string number_to_be_requested = 3;
+    string planned_namespace = 4;
+    map<string, string> tags_to_be_applied = 5;
+}
+
+
+service TerraformService {
+  rpc Terra (TerraRequest) returns(TerraResponse);
+}
+

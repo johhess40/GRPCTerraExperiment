@@ -23,13 +23,3 @@ func (s *Server) Sum(ctx context.Context, in *pb.SumRequest) (*pb.SumResponse, e
 		Result: in.Sum,
 	}, nil
 }
-
-func (s *Server) Terra(ctx context.Context, in *pb.TerraRequest) (*pb.TerraResponse, error) {
-	return &pb.TerraResponse{
-		Provider:            in.Provider,
-		ResourceName:        in.ResourceName,
-		NumberToBeRequested: in.NumberNeeded,
-		PlannedNamespace:    in.Prefix,
-		TagsToBeApplied:     in.Tags,
-	}, nil
-}

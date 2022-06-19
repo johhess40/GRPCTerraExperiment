@@ -17,11 +17,9 @@ func main() {
 
 	c := pb.NewGreetServiceClient(conn)
 	sum := pb.NewSumServiceClient(conn)
-	terra := pb.NewTerraformServiceClient(conn)
 
 	DoGreet(c)
 	GetSum(sum)
-	DisplayTerra(terra)
 	defer func(conn *grpc.ClientConn) {
 		err := conn.Close()
 		if err != nil {

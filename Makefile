@@ -37,13 +37,13 @@ else
 endif
 
 .DEFAULT_GOAL := help
-.PHONY: greet blog calculator help
-project := greet calculator blog
+.PHONY: greet blog terraform help
+project := greet terraform blog
 
 all: $(project) ## Generate Pbs and build
 
 greet: $@ ## Generate Pbs and build for greet
-calculator: $@ ## Generate Pbs and build for calculator
+terraform: $@ ## Generate Pbs and build for terraform
 blog: $@ ## Generate Pbs and build for blog
 
 $(project):
@@ -55,7 +55,7 @@ $(project):
 test: all ## Launch tests
 	go test ./...
 
-clean: clean_greet clean_calculator clean_blog ## Clean generated files
+clean: clean_greet clean_terraform clean_blog ## Clean generated files
 	${RM_F_CMD} ssl/*.crt
 	${RM_F_CMD} ssl/*.csr
 	${RM_F_CMD} ssl/*.key
@@ -65,8 +65,8 @@ clean: clean_greet clean_calculator clean_blog ## Clean generated files
 clean_greet: ## Clean generated files for greet
 	${RM_F_CMD} greet/${PROTO_DIR}/*.pb.go
 
-clean_calculator: ## Clean generated files for calculator
-	${RM_F_CMD} calculator/${PROTO_DIR}/*.pb.go
+clean_terraform: ## Clean generated files for terraform
+	${RM_F_CMD} terraform/${PROTO_DIR}/*.pb.go
 
 clean_blog: ## Clean generated files for blog
 	${RM_F_CMD} blog/${PROTO_DIR}/*.pb.go
