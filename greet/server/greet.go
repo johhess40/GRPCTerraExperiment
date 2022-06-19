@@ -25,7 +25,6 @@ func (s *Server) Sum(ctx context.Context, in *pb.SumRequest) (*pb.SumResponse, e
 }
 
 func (s *Server) Terra(ctx context.Context, in *pb.TerraRequest) (*pb.TerraResponse, error) {
-	log.Printf("Sum was received %v\n", in)
 	return &pb.TerraResponse{
 		Provider:            in.Provider,
 		ResourceName:        in.ResourceName,
