@@ -23,5 +23,9 @@ message TerraResponse {
 
 service TerraformService {
   rpc Terra (TerraRequest) returns(TerraResponse);
+  rpc TerraMany (TerraRequest) returns(stream TerraResponse);
+  rpc TerraLongStream (stream TerraRequest) returns(TerraResponse);
+  rpc TerraStreamAll (stream TerraRequest) returns(stream TerraResponse);
 }
+
 

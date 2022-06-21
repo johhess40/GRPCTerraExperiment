@@ -17,11 +17,14 @@ func main() {
 
 	terra := pb.NewTerraformServiceClient(conn)
 
-	DisplayTerra(terra)
+	//DisplayTerra(terra)
+	//StreamTerra(terra)
+	//StreamClientTerra(terra)
+	StreamAllTerra(terra)
 	defer func(conn *grpc.ClientConn) {
 		err := conn.Close()
 		if err != nil {
-
+			log.Fatal(err)
 		}
 	}(conn)
 

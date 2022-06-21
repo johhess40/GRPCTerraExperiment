@@ -23,6 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TerraformServiceClient interface {
 	Terra(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (*TerraResponse, error)
+	TerraMany(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (TerraformService_TerraManyClient, error)
+	TerraLongStream(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraLongStreamClient, error)
+	TerraStreamAll(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraStreamAllClient, error)
 }
 
 type terraformServiceClient struct {
@@ -42,11 +45,111 @@ func (c *terraformServiceClient) Terra(ctx context.Context, in *TerraRequest, op
 	return out, nil
 }
 
+func (c *terraformServiceClient) TerraMany(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (TerraformService_TerraManyClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[0], "/terra.TerraformService/TerraMany", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &terraformServiceTerraManyClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type TerraformService_TerraManyClient interface {
+	Recv() (*TerraResponse, error)
+	grpc.ClientStream
+}
+
+type terraformServiceTerraManyClient struct {
+	grpc.ClientStream
+}
+
+func (x *terraformServiceTerraManyClient) Recv() (*TerraResponse, error) {
+	m := new(TerraResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *terraformServiceClient) TerraLongStream(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraLongStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[1], "/terra.TerraformService/TerraLongStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &terraformServiceTerraLongStreamClient{stream}
+	return x, nil
+}
+
+type TerraformService_TerraLongStreamClient interface {
+	Send(*TerraRequest) error
+	CloseAndRecv() (*TerraResponse, error)
+	grpc.ClientStream
+}
+
+type terraformServiceTerraLongStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *terraformServiceTerraLongStreamClient) Send(m *TerraRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *terraformServiceTerraLongStreamClient) CloseAndRecv() (*TerraResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(TerraResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *terraformServiceClient) TerraStreamAll(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraStreamAllClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[2], "/terra.TerraformService/TerraStreamAll", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &terraformServiceTerraStreamAllClient{stream}
+	return x, nil
+}
+
+type TerraformService_TerraStreamAllClient interface {
+	Send(*TerraRequest) error
+	Recv() (*TerraResponse, error)
+	grpc.ClientStream
+}
+
+type terraformServiceTerraStreamAllClient struct {
+	grpc.ClientStream
+}
+
+func (x *terraformServiceTerraStreamAllClient) Send(m *TerraRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *terraformServiceTerraStreamAllClient) Recv() (*TerraResponse, error) {
+	m := new(TerraResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // TerraformServiceServer is the server API for TerraformService service.
 // All implementations must embed UnimplementedTerraformServiceServer
 // for forward compatibility
 type TerraformServiceServer interface {
 	Terra(context.Context, *TerraRequest) (*TerraResponse, error)
+	TerraMany(*TerraRequest, TerraformService_TerraManyServer) error
+	TerraLongStream(TerraformService_TerraLongStreamServer) error
+	TerraStreamAll(TerraformService_TerraStreamAllServer) error
 	mustEmbedUnimplementedTerraformServiceServer()
 }
 
@@ -56,6 +159,15 @@ type UnimplementedTerraformServiceServer struct {
 
 func (UnimplementedTerraformServiceServer) Terra(context.Context, *TerraRequest) (*TerraResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Terra not implemented")
+}
+func (UnimplementedTerraformServiceServer) TerraMany(*TerraRequest, TerraformService_TerraManyServer) error {
+	return status.Errorf(codes.Unimplemented, "method TerraMany not implemented")
+}
+func (UnimplementedTerraformServiceServer) TerraLongStream(TerraformService_TerraLongStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method TerraLongStream not implemented")
+}
+func (UnimplementedTerraformServiceServer) TerraStreamAll(TerraformService_TerraStreamAllServer) error {
+	return status.Errorf(codes.Unimplemented, "method TerraStreamAll not implemented")
 }
 func (UnimplementedTerraformServiceServer) mustEmbedUnimplementedTerraformServiceServer() {}
 
@@ -88,6 +200,79 @@ func _TerraformService_Terra_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TerraformService_TerraMany_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(TerraRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(TerraformServiceServer).TerraMany(m, &terraformServiceTerraManyServer{stream})
+}
+
+type TerraformService_TerraManyServer interface {
+	Send(*TerraResponse) error
+	grpc.ServerStream
+}
+
+type terraformServiceTerraManyServer struct {
+	grpc.ServerStream
+}
+
+func (x *terraformServiceTerraManyServer) Send(m *TerraResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _TerraformService_TerraLongStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TerraformServiceServer).TerraLongStream(&terraformServiceTerraLongStreamServer{stream})
+}
+
+type TerraformService_TerraLongStreamServer interface {
+	SendAndClose(*TerraResponse) error
+	Recv() (*TerraRequest, error)
+	grpc.ServerStream
+}
+
+type terraformServiceTerraLongStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *terraformServiceTerraLongStreamServer) SendAndClose(m *TerraResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *terraformServiceTerraLongStreamServer) Recv() (*TerraRequest, error) {
+	m := new(TerraRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _TerraformService_TerraStreamAll_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TerraformServiceServer).TerraStreamAll(&terraformServiceTerraStreamAllServer{stream})
+}
+
+type TerraformService_TerraStreamAllServer interface {
+	Send(*TerraResponse) error
+	Recv() (*TerraRequest, error)
+	grpc.ServerStream
+}
+
+type terraformServiceTerraStreamAllServer struct {
+	grpc.ServerStream
+}
+
+func (x *terraformServiceTerraStreamAllServer) Send(m *TerraResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *terraformServiceTerraStreamAllServer) Recv() (*TerraRequest, error) {
+	m := new(TerraRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // TerraformService_ServiceDesc is the grpc.ServiceDesc for TerraformService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,6 +285,23 @@ var TerraformService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TerraformService_Terra_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "TerraMany",
+			Handler:       _TerraformService_TerraMany_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "TerraLongStream",
+			Handler:       _TerraformService_TerraLongStream_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "TerraStreamAll",
+			Handler:       _TerraformService_TerraStreamAll_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "terra.proto",
 }
