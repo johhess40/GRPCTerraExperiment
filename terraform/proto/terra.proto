@@ -4,25 +4,38 @@ package terra;
 
 option go_package = "github.com/johess40/AlphagRpc/terraform/proto";
 
+import "google/protobuf/empty.proto";
+
+message TerraId {
+  string id = 1;
+}
+
 message TerraRequest {
-    string provider = 1;
-    string resource_name = 2;
-    string number_needed = 3;
-    string prefix = 4;
-    map<string, string> tags = 5;
+    string id = 1;
+    string provider = 2;
+    string resource_name = 3;
+    string number_needed = 4;
+    string prefix = 5;
+    map<string, string> tags = 6;
 }
 
 message TerraResponse {
-    string provider = 1;
-    string resource_name = 2;
-    string number_to_be_requested = 3;
-    string planned_namespace = 4;
-    map<string, string> tags_to_be_applied = 5;
+    string id = 1;
+    string provider = 2;
+    string resource_name = 3;
+    string number_to_be_requested = 4;
+    string planned_namespace = 5;
+    map<string, string> tags_to_be_applied = 6;
 }
 
 
 service TerraformService {
   rpc Terra (TerraRequest) returns(TerraResponse);
+  rpc CreateTerra (TerraRequest) returns(TerraId);
+  rpc ReadTerra (TerraId) returns(TerraResponse);
+  rpc UpdateTerra (TerraRequest) returns(google.protobuf.Empty);
+  rpc DeleteTerra (TerraId) returns(google.protobuf.Empty);
+  rpc ListTerra (google.protobuf.Empty) returns(stream TerraResponse);
   rpc TerraMany (TerraRequest) returns(stream TerraResponse);
   rpc TerraLongStream (stream TerraRequest) returns(TerraResponse);
   rpc TerraStreamAll (stream TerraRequest) returns(stream TerraResponse);

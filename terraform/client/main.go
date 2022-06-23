@@ -20,7 +20,10 @@ func main() {
 	//DisplayTerra(terra)
 	//StreamTerra(terra)
 	//StreamClientTerra(terra)
-	StreamAllTerra(terra)
+	//StreamAllTerra(terra)
+	createTerra(terra)
+	readTerra(terra, "62b290db8f48ecf3ce0d9414")
+	readTerra(terra, "ppohoeiuhrperere")
 	defer func(conn *grpc.ClientConn) {
 		err := conn.Close()
 		if err != nil {

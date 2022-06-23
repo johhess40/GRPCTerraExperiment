@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,6 +24,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TerraformServiceClient interface {
 	Terra(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (*TerraResponse, error)
+	CreateTerra(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (*TerraId, error)
+	ReadTerra(ctx context.Context, in *TerraId, opts ...grpc.CallOption) (*TerraResponse, error)
+	UpdateTerra(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteTerra(ctx context.Context, in *TerraId, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	ListTerra(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (TerraformService_ListTerraClient, error)
 	TerraMany(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (TerraformService_TerraManyClient, error)
 	TerraLongStream(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraLongStreamClient, error)
 	TerraStreamAll(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraStreamAllClient, error)
@@ -45,8 +51,76 @@ func (c *terraformServiceClient) Terra(ctx context.Context, in *TerraRequest, op
 	return out, nil
 }
 
+func (c *terraformServiceClient) CreateTerra(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (*TerraId, error) {
+	out := new(TerraId)
+	err := c.cc.Invoke(ctx, "/terra.TerraformService/CreateTerra", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *terraformServiceClient) ReadTerra(ctx context.Context, in *TerraId, opts ...grpc.CallOption) (*TerraResponse, error) {
+	out := new(TerraResponse)
+	err := c.cc.Invoke(ctx, "/terra.TerraformService/ReadTerra", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *terraformServiceClient) UpdateTerra(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/terra.TerraformService/UpdateTerra", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *terraformServiceClient) DeleteTerra(ctx context.Context, in *TerraId, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/terra.TerraformService/DeleteTerra", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *terraformServiceClient) ListTerra(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (TerraformService_ListTerraClient, error) {
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[0], "/terra.TerraformService/ListTerra", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &terraformServiceListTerraClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type TerraformService_ListTerraClient interface {
+	Recv() (*TerraResponse, error)
+	grpc.ClientStream
+}
+
+type terraformServiceListTerraClient struct {
+	grpc.ClientStream
+}
+
+func (x *terraformServiceListTerraClient) Recv() (*TerraResponse, error) {
+	m := new(TerraResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *terraformServiceClient) TerraMany(ctx context.Context, in *TerraRequest, opts ...grpc.CallOption) (TerraformService_TerraManyClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[0], "/terra.TerraformService/TerraMany", opts...)
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[1], "/terra.TerraformService/TerraMany", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +152,7 @@ func (x *terraformServiceTerraManyClient) Recv() (*TerraResponse, error) {
 }
 
 func (c *terraformServiceClient) TerraLongStream(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraLongStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[1], "/terra.TerraformService/TerraLongStream", opts...)
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[2], "/terra.TerraformService/TerraLongStream", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +186,7 @@ func (x *terraformServiceTerraLongStreamClient) CloseAndRecv() (*TerraResponse, 
 }
 
 func (c *terraformServiceClient) TerraStreamAll(ctx context.Context, opts ...grpc.CallOption) (TerraformService_TerraStreamAllClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[2], "/terra.TerraformService/TerraStreamAll", opts...)
+	stream, err := c.cc.NewStream(ctx, &TerraformService_ServiceDesc.Streams[3], "/terra.TerraformService/TerraStreamAll", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -147,6 +221,11 @@ func (x *terraformServiceTerraStreamAllClient) Recv() (*TerraResponse, error) {
 // for forward compatibility
 type TerraformServiceServer interface {
 	Terra(context.Context, *TerraRequest) (*TerraResponse, error)
+	CreateTerra(context.Context, *TerraRequest) (*TerraId, error)
+	ReadTerra(context.Context, *TerraId) (*TerraResponse, error)
+	UpdateTerra(context.Context, *TerraRequest) (*emptypb.Empty, error)
+	DeleteTerra(context.Context, *TerraId) (*emptypb.Empty, error)
+	ListTerra(*emptypb.Empty, TerraformService_ListTerraServer) error
 	TerraMany(*TerraRequest, TerraformService_TerraManyServer) error
 	TerraLongStream(TerraformService_TerraLongStreamServer) error
 	TerraStreamAll(TerraformService_TerraStreamAllServer) error
@@ -159,6 +238,21 @@ type UnimplementedTerraformServiceServer struct {
 
 func (UnimplementedTerraformServiceServer) Terra(context.Context, *TerraRequest) (*TerraResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Terra not implemented")
+}
+func (UnimplementedTerraformServiceServer) CreateTerra(context.Context, *TerraRequest) (*TerraId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTerra not implemented")
+}
+func (UnimplementedTerraformServiceServer) ReadTerra(context.Context, *TerraId) (*TerraResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadTerra not implemented")
+}
+func (UnimplementedTerraformServiceServer) UpdateTerra(context.Context, *TerraRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTerra not implemented")
+}
+func (UnimplementedTerraformServiceServer) DeleteTerra(context.Context, *TerraId) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTerra not implemented")
+}
+func (UnimplementedTerraformServiceServer) ListTerra(*emptypb.Empty, TerraformService_ListTerraServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListTerra not implemented")
 }
 func (UnimplementedTerraformServiceServer) TerraMany(*TerraRequest, TerraformService_TerraManyServer) error {
 	return status.Errorf(codes.Unimplemented, "method TerraMany not implemented")
@@ -198,6 +292,99 @@ func _TerraformService_Terra_Handler(srv interface{}, ctx context.Context, dec f
 		return srv.(TerraformServiceServer).Terra(ctx, req.(*TerraRequest))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _TerraformService_CreateTerra_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TerraRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TerraformServiceServer).CreateTerra(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/terra.TerraformService/CreateTerra",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TerraformServiceServer).CreateTerra(ctx, req.(*TerraRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TerraformService_ReadTerra_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TerraId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TerraformServiceServer).ReadTerra(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/terra.TerraformService/ReadTerra",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TerraformServiceServer).ReadTerra(ctx, req.(*TerraId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TerraformService_UpdateTerra_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TerraRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TerraformServiceServer).UpdateTerra(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/terra.TerraformService/UpdateTerra",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TerraformServiceServer).UpdateTerra(ctx, req.(*TerraRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TerraformService_DeleteTerra_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TerraId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TerraformServiceServer).DeleteTerra(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/terra.TerraformService/DeleteTerra",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TerraformServiceServer).DeleteTerra(ctx, req.(*TerraId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TerraformService_ListTerra_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(emptypb.Empty)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(TerraformServiceServer).ListTerra(m, &terraformServiceListTerraServer{stream})
+}
+
+type TerraformService_ListTerraServer interface {
+	Send(*TerraResponse) error
+	grpc.ServerStream
+}
+
+type terraformServiceListTerraServer struct {
+	grpc.ServerStream
+}
+
+func (x *terraformServiceListTerraServer) Send(m *TerraResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _TerraformService_TerraMany_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -284,8 +471,29 @@ var TerraformService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Terra",
 			Handler:    _TerraformService_Terra_Handler,
 		},
+		{
+			MethodName: "CreateTerra",
+			Handler:    _TerraformService_CreateTerra_Handler,
+		},
+		{
+			MethodName: "ReadTerra",
+			Handler:    _TerraformService_ReadTerra_Handler,
+		},
+		{
+			MethodName: "UpdateTerra",
+			Handler:    _TerraformService_UpdateTerra_Handler,
+		},
+		{
+			MethodName: "DeleteTerra",
+			Handler:    _TerraformService_DeleteTerra_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ListTerra",
+			Handler:       _TerraformService_ListTerra_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "TerraMany",
 			Handler:       _TerraformService_TerraMany_Handler,

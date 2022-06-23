@@ -1,0 +1,53 @@
+
+syntax = "proto3";
+option go_package = "github.com/johess40/AlphagRpc/terraform/proto/azure";
+package azure;
+import "google/protobuf/any.proto";
+
+
+
+message RgBlob {
+  string name = 1;
+  string location = 2;
+}
+
+message StateBlob {
+  message Outputs {
+  }
+
+  message Tags {
+    map<string, string> tags = 1;
+  }
+
+  message Attributes {
+    string id = 1;
+    string location = 2;
+    string name = 3;
+    Tags tags = 4;
+    google.protobuf.Any timeouts = 5;
+  }
+
+  message Instances {
+    uint32 schema_version = 1;
+    Attributes attributes = 2;
+    repeated google.protobuf.Any sensitive_attributes = 3;
+    string private = 4;
+  }
+
+  message Resources {
+    string mode = 1;
+    string type = 2;
+    string name = 3;
+    string provider = 4;
+    repeated Instances instances = 5;
+  }
+
+  uint32 version = 1;
+  string terraform_version = 2;
+  uint32 serial = 3;
+  string lineage = 4;
+  Outputs outputs = 5;
+  repeated Resources resources = 6;
+}
+
+service StateService {}
